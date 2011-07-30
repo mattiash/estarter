@@ -1,0 +1,19 @@
+# What about security? Can anyone connect to the node now? Any user on the local system who can read the cookie value?
+
+Can we use a random cookie that we generate if it doesn't exist and store it in the same way as normal init.d store PID-files?
+
+# Generate random cookie:
+head -c32 /dev/urandom | md5sum| cut -c1-32
+
+# Run sample node
+erl -sname "mattias" -setcookie hello
+
+# Stopping the sample node
+erl -setcookie hello -sname test -eval "rpc:call('mattias@pvr',init,stop,[])" -s erlang halt -noshell
+
+# Check if sample node is running
+(test@pvr)1> rpc:call( 'mattias@pvr', erlang, is_alive, [] ).
+true
+# took down other node
+(test@pvr)2> rpc:call( 'mattias@pvr', erlang, is_alive, [] ).
+{badrpc,nodedown}
