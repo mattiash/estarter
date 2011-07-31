@@ -11,7 +11,17 @@ NAME=`basename $P`
 HOST=`hostname`
 DESC="No description supplied"
 
-# source $P/priv/estarter.conf
+# Wildcards that don't match anything will remain unexpanded...
+e0=$P/ebin
+e1=$P/deps/*/ebin
+e2=$P/deps/*/include
+e3=$P/apps/*/ebin
+e4=$P/apps/*/include
+erllibs="$e0 $e1 $e2 $e3 $e4"
+erlconfig=
+[ -f $P/sys.config ] && erlconfig="-config $P/sys.config"
+
+. ./priv/estarter.conf
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
@@ -77,14 +87,15 @@ do_start()
 	#   0 if daemon has been started
 	#   1 if daemon was already running
 	#   2 if daemon could not be started
-	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON --test > /dev/null \
-		|| return 1
-	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON -- \
-		$DAEMON_ARGS \
-		|| return 2
-	# Add code here, if necessary, that waits for the process to be ready
-	# to handle requests from services started subsequently which depend
-	# on this one.  As a last resort, sleep for some time.
+    do_status
+    case "$?" in
+	0) return 1;;
+	1|2) 
+          set_cookie
+          su $user -c "erl -pa $erllibs $erlconfig -name $NAME@127.0.0.1 -setcookie $COOKIE  -detached > /tmp/err 2>&1"
+# -eval $NAME:start\(\)
+	  return 2;;
+    esac
 }
 
 #
@@ -97,20 +108,15 @@ do_stop()
 	#   1 if daemon was already stopped
 	#   2 if daemon could not be stopped
 	#   other if a failure occurred
-	start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $NAME
-	RETVAL="$?"
-	[ "$RETVAL" = 2 ] && return 2
-	# Wait for children to finish too if this is a daemon that forks
-	# and if the daemon is only ever run from this initscript.
-	# If the above conditions are not satisfied then add some other code
-	# that waits for the process to drop all resources that could be
-	# needed by services started subsequently.  A last resort is to
-	# sleep for some time.
-	start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON
-	[ "$?" = 2 ] && return 2
-	# Many daemons don't delete their pidfiles when they exit.
-	rm -f $PIDFILE
-	return "$RETVAL"
+    do_status
+    case "$?" in
+	0) ;;
+	1|2) return 1;;
+    esac
+    
+    erl -setcookie $COOKIE -name ${NAME}_init@127.0.0.1 -eval "rpc:call('${NAME}@127.0.0.1',init, stop, [] )" -s erlang halt -noshell
+
+    clear_cookie
 }
 
 #
