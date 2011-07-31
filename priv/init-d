@@ -49,7 +49,7 @@ clear_cookie()
 
 ping_vm()
 {
-    ISRUNNING=`erl -setcookie $COOKIE -sname ${NAME}_init -eval "case rpc:call('${NAME}@${HOST}',erlang, is_alive, [] )  of true -> io:format(\"running\"); _ -> none end" -s erlang halt -noshell`
+    ISRUNNING=`erl -setcookie $COOKIE -name ${NAME}_init@127.0.0.1 -eval "case rpc:call('${NAME}@127.0.0.1',erlang, is_alive, [] )  of true -> io:format(\"running\"); _ -> none end" -s erlang halt -noshell`
     [ "$ISRUNNING" = running ] && return 0
     return 1
 }
@@ -146,9 +146,9 @@ case "$1" in
   status)
 	do_status
 	case "$?" in
-		0) echo running ;;
-		1) echo "not started" ;; 
-		2) echo "started but died" ;;
+		0) echo "$NAME running" ;;
+		1) echo "$NAME not started" ;; 
+		2) echo "$NAME started but died" ;;
 	esac
 	;;
   reload|force-reload)
