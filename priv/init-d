@@ -40,6 +40,7 @@ set_cookie()
 {
     COOKIE=`head -c32 /dev/urandom | md5sum| cut -c1-32`
     echo $COOKIE > $COOKIEFILE
+    chmod go-r $COOKIEFILE
 }
 
 get_cookie()
