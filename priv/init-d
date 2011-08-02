@@ -93,7 +93,7 @@ do_start()
           set_cookie
           su $user -c "erl -pa $erllibs $erlconfig -name $NAME@127.0.0.1 -setcookie $COOKIE  -detached > /tmp/err 2>&1"
 # -eval $NAME:start\(\)
-	  return 2;;
+	  return 0;;
     esac
 }
 
@@ -116,6 +116,7 @@ do_stop()
     erl -setcookie $COOKIE -name ${NAME}_init@127.0.0.1 -eval "rpc:call('${NAME}@127.0.0.1',init, stop, [] )" -s erlang halt -noshell
 
     clear_cookie
+    return 0
 }
 
 #
