@@ -28,7 +28,7 @@ COOKIEFILE=/var/run/$NAME.cookie
 
 SCRIPTNAME=/etc/init.d/$NAME
 
-machine=`hostname`
+machine=`hostname --fqdn`
 
 # Load the VERBOSE setting and other rcS variables
 . /lib/init/vars.sh
