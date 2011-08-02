@@ -60,7 +60,7 @@ clear_cookie()
 
 ping_vm()
 {
-    ISRUNNING=`erl -setcookie $COOKIE -name ${NAME}_init@$hostname -eval "case rpc:call('${NAME}@$hostname',erlang, is_alive, [] )  of true -> io:format(\"running\"); _ -> none end" -s erlang halt -noshell`
+    ISRUNNING=`erl -setcookie $COOKIE -name ${NAME}_init@$machine -eval "case rpc:call('${NAME}@$machine',erlang, is_alive, [] )  of true -> io:format(\"running\"); _ -> none end" -s erlang halt -noshell`
     [ "$ISRUNNING" = running ] && return 0
     return 1
 }
@@ -93,7 +93,7 @@ do_start()
 	0) return 1;;
 	1|2) 
           set_cookie
-          su $user -c "erl -pa $erllibs $erlconfig -name $NAME@$hostname -setcookie $COOKIE -eval $NAME:start\(\) -detached > /tmp/err 2>&1"
+          su $user -c "erl -pa $erllibs $erlconfig -name $NAME@$machine -setcookie $COOKIE -eval $NAME:start\(\) -detached > /tmp/err 2>&1"
 	  return 0;;
     esac
 }
@@ -114,7 +114,7 @@ do_stop()
 	1|2) return 1;;
     esac
     
-    erl -setcookie $COOKIE -name ${NAME}_init@$hostname -eval "rpc:call('${NAME}@$hostname',init, stop, [] )" -s erlang halt -noshell
+    erl -setcookie $COOKIE -name ${NAME}_init@$machine -eval "rpc:call('${NAME}@$machine',init, stop, [] )" -s erlang halt -noshell
 
     clear_cookie
     return 0
