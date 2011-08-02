@@ -4,11 +4,10 @@
 
 # Do NOT "set -e"
 
-#A=$0
-A="/home/mattias/development/elights/dep/estarter/priv/init-d"
+A=$0
+#A="/home/mattias/development/elights/dep/estarter/priv/init-d"
 P=${A%%/dep/estarter/priv/init-d}
 NAME=`basename $P`
-HOST=`hostname`
 DESC="No description supplied"
 
 # Wildcards that don't match anything will remain unexpanded...
@@ -25,8 +24,7 @@ erlconfig=
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-#COOKIEFILE=/var/run/$NAME.cookie
-COOKIEFILE=/tmp/$NAME.cookie
+COOKIEFILE=/var/run/$NAME.cookie
 
 SCRIPTNAME=/etc/init.d/$NAME
 
