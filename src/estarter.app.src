@@ -1,0 +1,12 @@
+{application, estarter,
+ [
+  {description, "Estarter application"},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { estarter_app, []}},
+  {env, []}
+ ]}.
