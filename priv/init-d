@@ -6,7 +6,7 @@
 
 A=$0
 #A="/home/mattias/development/elights/dep/estarter/priv/init-d"
-P=${A%%/dep/estarter/priv/init-d}
+P=${A%%/deps/estarter/priv/init-d}
 NAME=`basename $P`
 DESC="No description supplied"
 
@@ -20,7 +20,7 @@ erllibs="$e0 $e1 $e2 $e3 $e4"
 erlconfig=
 [ -f $P/sys.config ] && erlconfig="-config $P/sys.config"
 
-. ./priv/estarter.conf
+. $P/priv/estarter.conf
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
