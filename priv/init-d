@@ -133,6 +133,12 @@ do_reload() {
 	return 0
 }
 
+do_shell() {
+    get_cookie
+    echo ctrl-g q to exit shell.
+    erl -setcookie $COOKIE -name ${NAME}_shell@$machine -remsh ${NAME}@$machine
+}
+
 case "$1" in
   start)
 	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
@@ -185,9 +191,12 @@ case "$1" in
 		;;
 	esac
 	;;
+  shell)
+	do_shell
+	;;
   *)
 	#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
-	echo "Usage: $SCRIPTNAME {start|stop|status|restart|force-reload}" >&2
+	echo "Usage: $SCRIPTNAME {start|stop|status|restart|force-reload|shell}" >&2
 	exit 3
 	;;
 esac
